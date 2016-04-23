@@ -39,32 +39,30 @@
       <br><br>
       <form id="myForm">
 
-         <select id="selectBrand">
-          <option>Select a Brand</option>
-          <option value="001">ABC</option>
-          <option value="002">ABC Family</option>
-          <option value="003">ABC News</option>
-          <option value="004">Disney Channel</option>
-          <option value="008">Disney Junior</option>
-          <option value="009">Disney XD</option>
-        </select>
+        Image Name: <input type="text" name="image_name"><br>
+        <br>
+        <input type="file" name="image" accept="*">
 
-        <select id="selectContentType">
-          <option>Select a Content Type</option>
-          <option>show</option>
-          <option>tile</option>
-          <option>slide</option>
-          <option>video</option>
-          <option>tilegroup</option>
-          <option>slideshow</option>
-        </select>
+        <button type="button" id="button1">Upload</button>
 
-        <button type="button" id="button1">Populate Image Types</button>
         <br><br>
-        <select id="selectImageType">
-          <option>Select an imageType</option>
-        </select>
         
+        <div style="border: solid; height: 100px; width: 200px;">Image Preview Here</div>
+
+        <br><br>  
+
+        <button type="button" id="image_types_butt">Get Image Types</button>        
+
+        <fieldset>
+          <legend>Image Types:</legend>
+          <input type="checkbox" name="image_types" value="trendingposterPath" />trendingposter <br />
+          <input type="checkbox" name="image_types" value="postershowPath" />postershow<br />
+          <input type="checkbox" name="image_types" value="web16x9Path" />web16x9<br />
+        </fieldset>
+                
+        <br><br>
+        <button type="button" id="associate_image_butt">Associate Image</button>  
+
       </form>
       </div>
 

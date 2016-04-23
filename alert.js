@@ -1,17 +1,11 @@
 // handles the elements from the page itself
 
-//var objName = document.getElementById("commonPropname_formID1").innerHTML;
+var contentObjTitle;
 
-//return objName;
+//contentObjTitle = document.getElementById("contentCellcommonname_formID1").innerHTML;
 
- //$('#main_title').text(objName);
+//contentObjTitle = document.getElementsByClassName("editable headerPencilEdit").innerHTML;
 
-var title;
+contentObjTitle = $(".editable.headerPencilEdit").text();
 
-title = document.getElementById("headerSubtext").innerHTML;
-
-title
-
-//return title;
-
-//alert("hellow from alert " + title);
+contentObjTitle

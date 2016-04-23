@@ -1,32 +1,27 @@
-// var app = chrome.runtime.getBackgroundPage();
 
-var title;
+// function setContentObjectName() {
+//   // chrome.tabs.executeScript({
+//   //   file: 'alert.js'
+//   // }); 
 
-function hello() {
-  // chrome.tabs.executeScript({
-  //   file: 'alert.js'
-  // }); 
-
-	chrome.tabs.executeScript({file: "alert.js"}, function (test){
-            title = test;
-            document.getElementById('main_title').innerHTML = title;
-        });
-	
-
-
-	//return title;
-}
-
-
-// function onLoadFunction() {
-//   chrome.tabs.executeScript({
-//     file: 'alert2.js'
-//   }); 
-//   //var objName = $('#commonPropname_formID1').text();
+// 	chrome.tabs.executeScript({file: "alert.js"}, function (test){
+//             var title = test;
+//             document.getElementById('main_title').innerHTML = title;
+//         });
 // }
 
 
-//javascript that interacts with the popup
-document.getElementById('button1').addEventListener('click', hello);
+function setContentObjectName() {
+	chrome.tabs.executeScript(null, { file: "jquery-1.12.2.js" }, function() {
+    	chrome.tabs.executeScript(null, { file: "alert.js" }, function (test){
+            var title = test;
+            document.getElementById('main_title').innerHTML = title;
+        });
+	});
+}
 
-//window.addEventListener("load", onLoadFunction);
+
+//javascript that interacts with the popup
+//document.getElementById('button1').addEventListener('click', hello);
+
+window.addEventListener("load", setContentObjectName);
