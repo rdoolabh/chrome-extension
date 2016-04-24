@@ -6,4 +6,6 @@ hashtable.title = $(".editable.headerPencilEdit").text();
 
 hashtable.contentTypeName = $(".contentTypeDisplay").text();
 
+hashtable.sectionPath = $(".editable.pencilEdit.sectionChooserLink.sectionFolderSearch").text();
+
 hashtable

@@ -12,6 +12,16 @@
 
 var hashtable;
 
+var brandTable = {};
+brandTable['ABC'] = "001";
+brandTable['ABCFamily'] = "002";
+brandTable['ABCNews'] = "003"
+brandTable['DisneyChannel'] = "004";
+brandTable['DisneyJunior'] = "008";
+brandTable['DisneyXD'] = "009";
+brandTable['EverGreen'] = "999";
+
+
 function setContentObjectName() {
 	chrome.tabs.executeScript(null, { file: "jquery-1.12.2.js" }, function() {
     	chrome.tabs.executeScript(null, { file: "alert.js" }, function (result){
@@ -29,9 +39,8 @@ function populateImageTypes() {
 	var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
 
 	//TODO get brand id and make a call for alias
-	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", "001");
+	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", getBrandCode());
 
-	//TODO get contentType from page
 	var imageTypesApi = apiUrlWithBrand.replace("{contentType}", hashtable.contentTypeName);
 
 	var x = new XMLHttpRequest();
@@ -55,6 +64,12 @@ function populateImageTypes() {
   x.send();
 }
 
+
+function getBrandCode() {
+	var sectionPathArr = hashtable.sectionPath.split("/");
+
+	return brandTable[sectionPathArr[1]];
+}
 
 function createOptionForImageType(userImageTypeName, treePath) {
 	$('#image_types_container').append('<input type="checkbox" value='+ treePath +'/>'+ userImageTypeName +'<br>');
