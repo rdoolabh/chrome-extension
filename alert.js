@@ -1,11 +1,9 @@
 // handles the elements from the page itself
 
-var contentObjTitle;
+var hashtable = {};
 
-//contentObjTitle = document.getElementById("contentCellcommonname_formID1").innerHTML;
+hashtable.title = $(".editable.headerPencilEdit").text();
 
-//contentObjTitle = document.getElementsByClassName("editable headerPencilEdit").innerHTML;
+hashtable.contentTypeName = $(".contentTypeDisplay").text();
 
-contentObjTitle = $(".editable.headerPencilEdit").text();
-
-contentObjTitle
+hashtable

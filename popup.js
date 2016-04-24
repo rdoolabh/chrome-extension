@@ -10,12 +10,14 @@
 //         });
 // }
 
+var hashtable;
 
 function setContentObjectName() {
 	chrome.tabs.executeScript(null, { file: "jquery-1.12.2.js" }, function() {
-    	chrome.tabs.executeScript(null, { file: "alert.js" }, function (test){
-            var title = test;
-            $('#main_title').html(title);
+    	chrome.tabs.executeScript(null, { file: "alert.js" }, function (result){
+
+    		hashtable = result[0];
+    		$('#main_title').html(hashtable.title);
         });
 	});
 }
@@ -30,7 +32,7 @@ function populateImageTypes() {
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", "001");
 
 	//TODO get contentType from page
-	var imageTypesApi = apiUrlWithBrand.replace("{contentType}", "show");
+	var imageTypesApi = apiUrlWithBrand.replace("{contentType}", hashtable.contentTypeName);
 
 	var x = new XMLHttpRequest();
   	x.open('GET', imageTypesApi);
@@ -61,6 +63,7 @@ function createOptionForImageType(userImageTypeName, treePath) {
 //javascript that interacts with the popup
 document.getElementById('image_types_butt').addEventListener('click', populateImageTypes);
 
+//document.getElementById('associate_image_butt').addEventListener('click', setContentObjectName);
 
 window.addEventListener("load", setContentObjectName);
 
