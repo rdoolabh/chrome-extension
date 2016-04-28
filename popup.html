@@ -35,37 +35,46 @@
         <img id="loading-image" src="loading.gif" style="height: 100px" alt="Loading..." />
       </div>
       <span id="main_title"></span>
-      <div>
-      <br><br>
       <span id="content_type_name"></span>
-      <form id="myForm">
-
-        Image Name: <input type="text" name="image_name"><br>
-        <br>
-        <input type="file" name="image" accept="*">
-
-        <button type="button" id="button1">Upload</button>
-
+      <div>
         <br><br>
-        
-        <div style="border: solid; height: 100px; width: 200px;">Image Preview Here</div>
+        <form id="myForm">
 
-        <br><br>  
+          Image Name: <input type="text" name="image_name" id="image_name"><br>
+          <br>
+          <!-- <input id="file_uploader" type="file" name="image" accept="*"> -->
+          <input type="file" id="file_uploader" multiple size="50">
 
-        <button type="button" id="image_types_butt">Get Image Types</button>        
+          <button type="button" id="upload_butt">Upload</button>
 
-        <fieldset id="image_types_container">
-          <legend>Image Types:</legend>
-          <span id="image_types_empty_message">No image types available</span>
-          <!--<input type="checkbox" name="fake_value" value="fake_value" />trendingposter <br />
-          <input type="checkbox" name="image_types" value="postershowPath" />postershow<br />
-          <input type="checkbox" name="image_types" value="web16x9Path" />web16x9<br />-->
-        </fieldset>
+          <br><br>
 
-        <br><br>
-        <button type="button" id="associate_image_butt">Associate Image</button>  
+          <div id="image_upload_success" style="display: none;">
+            <span style="color: green;">SUCCESSFUL!</span> <br>
+            <span>Here is the DAM ID for the ImageSource:</span>
+            <span id="imagesource_id" style="color: green;"></span>
+          </div>
 
-      </form>
+          <br><br>
+          
+          <div id="preview"></div>
+
+          <br><br>  
+
+          <button type="button" id="image_types_butt">Get Image Types</button>        
+
+          <fieldset id="image_types_container">
+            <legend>Image Types:</legend>
+            <span id="image_types_empty_message">No image types available</span>
+            <!--<input type="checkbox" name="fake_value" value="fake_value" />trendingposter <br />
+            <input type="checkbox" name="image_types" value="postershowPath" />postershow<br />
+            <input type="checkbox" name="image_types" value="web16x9Path" />web16x9<br />-->
+          </fieldset>
+
+          <br><br>
+          <button type="button" id="associate_image_butt">Associate Image</button>  
+
+        </form>
       </div>
 
     </div>

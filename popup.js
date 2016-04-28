@@ -12,6 +12,8 @@
 
 var hashtable;
 
+var sectionPathArr;
+
 var brandTable = {};
 brandTable['ABC'] = "001";
 brandTable['ABCFamily'] = "002";
@@ -28,6 +30,8 @@ function setContentObjectName() {
 
     		hashtable = result[0];
     		$('#main_title').html(hashtable.title);
+
+    		sectionPathArr = hashtable.sectionPath.split("/");
         });
 	});
 }
@@ -64,21 +68,91 @@ function populateImageTypes() {
   x.send();
 }
 
+function uploadImage() {
+	$("#loading").show();	
+
+	//var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+
+	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandName}", getBrandName());
+
+	var apiUrlWithImageName = apiUrlWithBrand.replace("{imageName}", $("#image_name").val());
+
+	var apiUrlWithFileExtension = apiUrlWithImageName.replace("{fileExtension}", getFileExtension());
+
+	//TODO get showname from the page
+	var imageUploadApi = apiUrlWithFileExtension.replace("&show-name={showName}", "");
+
+	var x = new XMLHttpRequest();
+  	x.open('POST', imageUploadApi);
+
+  	x.setRequestHeader("Content-type", "application/octet-stream");
+
+  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
+
+  	x.responseType = 'json';
+  	x.onload = function() {
+    	// Parse and process the response from contentsadmin
+    	var response = x.response;
+
+    	$("#imagesource_id").html(response.damImageContentId);
+
+    	$("#image_upload_success").fadeIn("slow");
+
+    	previewImage(response.thumbnailUrl);
+	  	
+	  	$("#loading").hide();
+  };
+  x.onerror = function() {
+    alert("ERROR");
+  };
+  x.send(getFile());
+}
+
 
 function getBrandCode() {
-	var sectionPathArr = hashtable.sectionPath.split("/");
-
+	var brandName = getBrandName();
 	return brandTable[sectionPathArr[1]];
+}
+
+function getBrandName() {
+	return sectionPathArr[1];
 }
 
 function createOptionForImageType(userImageTypeName, treePath) {
 	$('#image_types_container').append('<input type="checkbox" value='+ treePath +'/>'+ userImageTypeName +'<br>');
 }
 
+function getFileExtension() {
+	var file = getFile();
+
+	var fileName = file.name;
+
+	var fileNameArr = fileName.split(".");
+
+	return fileNameArr[fileNameArr.length -1];
+}
+
+//TODO support multiple files instead of just one
+function getFile() {
+	var x = document.getElementById("file_uploader");
+
+	return x.files[0];
+}
+
+function previewImage(imageurl) {
+    var img = $('<img />', {src : imageurl, style : "height:100px;"});
+    img.appendTo('#preview');
+}
+
 //javascript that interacts with the popup
 document.getElementById('image_types_butt').addEventListener('click', populateImageTypes);
 
+document.getElementById('upload_butt').addEventListener('click', uploadImage);
+
 //document.getElementById('associate_image_butt').addEventListener('click', setContentObjectName);
+
 
 window.addEventListener("load", setContentObjectName);
 
