@@ -40,7 +40,7 @@ function populateImageTypes() {
 
 	$("#loading").show();	
 
-	var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
 
 	//TODO get brand id and make a call for alias
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", getBrandCode());
@@ -71,9 +71,9 @@ function populateImageTypes() {
 function uploadImage() {
 	$("#loading").show();	
 
-	//var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandName}", getBrandName());
 
@@ -113,9 +113,9 @@ function uploadImage() {
 function associateImage() {
 	$("#loading").show();	
 
-	//var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
 
 	var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
 
