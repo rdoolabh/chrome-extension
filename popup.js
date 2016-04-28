@@ -110,6 +110,42 @@ function uploadImage() {
   x.send(getFile());
 }
 
+function associateImage() {
+	$("#loading").show();	
+
+	//var apiUrlWithPlaceholders = 'http://api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
+
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
+
+	var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
+
+	//TODO call assosiate api in parallel
+	var paths = getTypePaths();
+
+	var associateimageApi = apiWithImageId.replace("{imageTypePath}", paths[0]);
+
+	var x = new XMLHttpRequest();
+  	x.open('POST', associateimageApi);
+
+  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
+
+  	x.responseType = 'json';
+  	x.onload = function() {
+    	// Parse and process the response from contentsadmin
+    	var response = x.response;
+	  	
+    	$("#imageassociation_id").html(response.commonProperties.ID);
+
+    	$("#image_associate_success").fadeIn("slow");
+
+	  	$("#loading").hide();
+  };
+  x.onerror = function() {
+    alert("ERROR");
+  };
+  x.send();
+}
+
 
 function getBrandCode() {
 	var brandName = getBrandName();
@@ -121,7 +157,7 @@ function getBrandName() {
 }
 
 function createOptionForImageType(userImageTypeName, treePath) {
-	$('#image_types_container').append('<input type="checkbox" value='+ treePath +'/>'+ userImageTypeName +'<br>');
+	$('#image_types_container').append('<input type="checkbox" class="image_type_checkboxes" value='+ treePath +'/>'+ userImageTypeName +'<br>');
 }
 
 function getFileExtension() {
@@ -146,12 +182,37 @@ function previewImage(imageurl) {
     img.appendTo('#preview');
 }
 
+function getImageId() {
+	return $("#imagesource_id").text();
+}
+
+function getTypePaths() {
+
+	var listOfSourcePaths = new Array();
+
+	$(".image_type_checkboxes").each(function(){
+    	if ($(this).prop('checked')==true){ 
+        	
+    		var pathString = $(this).val();
+
+        	if (pathString.charAt(pathString.length -1) == '/') {
+        		listOfSourcePaths.push(pathString.slice(0, -1));
+        	}
+        	else {
+        		listOfSourcePaths.push(pathString);
+        	}
+    	}
+	});
+
+	return listOfSourcePaths;
+}
+
 //javascript that interacts with the popup
 document.getElementById('image_types_butt').addEventListener('click', populateImageTypes);
 
 document.getElementById('upload_butt').addEventListener('click', uploadImage);
 
-//document.getElementById('associate_image_butt').addEventListener('click', setContentObjectName);
+document.getElementById('associate_image_butt').addEventListener('click', associateImage);
 
 
 window.addEventListener("load", setContentObjectName);
