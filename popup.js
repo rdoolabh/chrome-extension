@@ -13,6 +13,9 @@
 var hashtable;
 
 var sectionPathArr;
+var contentId;
+
+var cms;
 
 var brandTable = {};
 brandTable['ABC'] = "001";
@@ -23,15 +26,22 @@ brandTable['DisneyJunior'] = "008";
 brandTable['DisneyXD'] = "009";
 brandTable['EverGreen'] = "999";
 
+var presentationContent = {"Tile": true, "Slide": true, "Blog": true, "Episode": true, "Person": true, "Collection": true};
+
 
 function setContentObjectName() {
 	chrome.tabs.executeScript(null, { file: "jquery-1.12.2.js" }, function() {
-    	chrome.tabs.executeScript(null, { file: "alert.js" }, function (result){
+    	chrome.tabs.executeScript(null, { file: "pageInteraction.js" }, function (result){
 
     		hashtable = result[0];
     		$('#main_title').html(hashtable.title);
 
     		sectionPathArr = hashtable.sectionPath.split("/");
+
+    		contentId = getContentId(hashtable.contentIdAndDraft);
+
+    		cms = getCMS();
+
         });
 	});
 }
@@ -40,7 +50,9 @@ function populateImageTypes() {
 
 	$("#loading").show();	
 
-	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+
 
 	//TODO get brand id and make a call for alias
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", getBrandCode());
@@ -71,9 +83,9 @@ function populateImageTypes() {
 function uploadImage() {
 	$("#loading").show();	
 
-	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
-	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandName}", getBrandName());
 
@@ -113,9 +125,9 @@ function uploadImage() {
 function associateImage() {
 	$("#loading").show();	
 
-	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
+	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
 
-	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
 
 	var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
 
@@ -134,11 +146,15 @@ function associateImage() {
     	// Parse and process the response from contentsadmin
     	var response = x.response;
 	  	
-    	$("#imageassociation_id").html(response.commonProperties.ID);
+    	$("#imageassociation_dam_id").html(response.commonProperties.ID);
+
+    	$("#imageassociation_pres_id").html(response.customProperties.PresentationReferenceID);
 
     	$("#image_associate_success").fadeIn("slow");
 
 	  	$("#loading").hide();
+
+	  	addImageToContent(response.customProperties.PresentationReferenceID);
   };
   x.onerror = function() {
     alert("ERROR");
@@ -205,6 +221,94 @@ function getTypePaths() {
 	});
 
 	return listOfSourcePaths;
+}
+
+function getContentId(contentIdAndDraft) {
+	var contentArr = contentIdAndDraft.split(",");
+
+	return contentArr[0].substring(4, contentArr[0].length)
+
+}
+
+function addImageToContent(imagePresId) {
+
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+
+	//TODO get brand id and make a call for alias
+	var apiUrlWithId = apiUrlWithPlaceholders.replace("{id}", contentId);
+
+	var contentObjectApi = apiUrlWithId.replace("{cms}", cms);
+
+	var x = new XMLHttpRequest();
+  	x.open('GET', contentObjectApi);
+
+  	x.responseType = 'json';
+  	x.onload = function() {
+    	// Parse and process the response from contentsadmin
+    	var response = x.response;
+
+    	//TODO move this cadd back in the addImageToContent() func
+		var payloadWithImages = addImages(response, imagePresId);
+		makePutRequest(payloadWithImages);
+
+	  	return response;
+
+  };
+  x.onerror = function() {
+    alert("ERROR");
+  };
+  x.send();
+
+}
+
+function addImages(payload, imagePresId) {
+
+	var jsonArr = '[{"commonProperties": {"ID": ' + imagePresId + '}}]';
+
+	var obj = JSON.parse(jsonArr);
+
+	payload.collectionProperties.ImageAssociations = obj;
+
+	return payload;
+}
+
+function makePutRequest(payloadWithImages) {	
+
+	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+
+	var apiWithContentId = apiUrlWithPlaceholders.replace("{id}", contentId);
+
+	var putApi = apiWithContentId.replace("{cms}", cms);
+
+	var x = new XMLHttpRequest();
+  	x.open('PUT', putApi);
+
+  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
+
+  	x.responseType = 'json';
+  	x.onload = function() {
+    	// Parse and process the response from contentsadmin
+    	var response = x.response;
+
+    	$("#images_added_success").fadeIn("slow");
+
+  };
+  x.onerror = function() {
+    alert("ERROR");
+  };
+  x.send(JSON.stringify(payloadWithImages));
+}
+
+function getCMS() {
+
+	var contentType = hashtable.contentTypeName;
+
+	if (contentType in presentationContent) {
+		return "presentation";
+	}
+	else {
+		return "dam";
+	}
 }
 
 //javascript that interacts with the popup
