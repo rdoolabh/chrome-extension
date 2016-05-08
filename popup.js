@@ -57,7 +57,7 @@ function populateImageTypes() {
 	//TODO get brand id and make a call for alias
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandId}", getBrandCode());
 
-	var imageTypesApi = apiUrlWithBrand.replace("{contentType}", hashtable.contentTypeName);
+	var imageTypesApi = apiUrlWithBrand.replace("{contentType}", hashtable.contentTypeName.toLowerCase());
 
 	var x = new XMLHttpRequest();
   	x.open('GET', imageTypesApi);
@@ -154,7 +154,14 @@ function associateImage() {
 
 	  	$("#loading").hide();
 
-	  	addImageToContent(response.customProperties.PresentationReferenceID);
+	  	if (cms == "presentation") {
+	  		addImageToContent(response.customProperties.PresentationReferenceID);	
+	  	}
+	  	else {
+	  		addImageToContent(response.commonProperties.ID);
+	  	}
+
+	  	
   };
   x.onerror = function() {
     alert("ERROR");
@@ -230,7 +237,7 @@ function getContentId(contentIdAndDraft) {
 
 }
 
-function addImageToContent(imagePresId) {
+function addImageToContent(imageId) {
 
 	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
 
@@ -248,7 +255,7 @@ function addImageToContent(imagePresId) {
     	var response = x.response;
 
     	//TODO move this cadd back in the addImageToContent() func
-		var payloadWithImages = addImages(response, imagePresId);
+		var payloadWithImages = addImages(response, imageId);
 		makePutRequest(payloadWithImages);
 
 	  	return response;
@@ -263,9 +270,18 @@ function addImageToContent(imagePresId) {
 
 function addImages(payload, imagePresId) {
 
+	// get the current imageAssociations
+	var currentIAList = payload.collectionProperties.ImageAssociations;
+
 	var jsonArr = '[{"commonProperties": {"ID": ' + imagePresId + '}}]';
 
 	var obj = JSON.parse(jsonArr);
+
+	if (currentIAList) {
+		for (var i =0; i < currentIAList.length; i++) {
+			obj.push(currentIAList[i]);
+		}
+	}
 
 	payload.collectionProperties.ImageAssociations = obj;
 
