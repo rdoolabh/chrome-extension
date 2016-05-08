@@ -30,12 +30,14 @@
 
   </head>
   <body>
-  <div style="width: 500px; height: 500px;">
-      <div id="loading" style="display:none; position:fixed; left: 250px">
+  <div style="width: 500px; height: 600px;">
+      <div id="loading" style="display:none; position:fixed; left: 350px">
         <img id="loading-image" src="loading.gif" style="height: 100px" alt="Loading..." />
       </div>
       <span id="main_title"></span>
       <span id="content_type_name"></span>
+      <br><br>
+      <span id="error_note" style="color: red;"></span>
       <div>
         <br><br>
         <form id="myForm">
@@ -81,8 +83,6 @@
             <span>Here is the Presentation ID for the ImageAssociation:</span>
             <span id="imageassociation_pres_id" style="color: green;"></span>
           </div>
-
-          <br><br>
           
           <div id="images_added_success" style="display: none;">
             <span style="color: green;">Images successfully added to content</span> <br>

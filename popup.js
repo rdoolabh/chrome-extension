@@ -1,15 +1,4 @@
 
-// function setContentObjectName() {
-//   // chrome.tabs.executeScript({
-//   //   file: 'alert.js'
-//   // }); 
-
-// 	chrome.tabs.executeScript({file: "alert.js"}, function (test){
-//             var title = test;
-//             document.getElementById('main_title').innerHTML = title;
-//         });
-// }
-
 var hashtable;
 
 var sectionPathArr;
@@ -34,6 +23,18 @@ function setContentObjectName() {
     	chrome.tabs.executeScript(null, { file: "pageInteraction.js" }, function (result){
 
     		hashtable = result[0];
+
+    		//validation
+    		if (!hashtable.title) {
+    			$("#error_note").append("Error - can't find object title on page. Please make sure you're on a cms object with ImageAssociations");
+    		}
+    		if (!hashtable.sectionPath) {
+    			$("#error_note").append("<br>Error - can't find sectionPath on page. Please make sure you're on a cms object with ImageAssociations");	
+    		}
+    		if (!hashtable.contentIdAndDraft) {
+    			$("#error_note").append("<br>Error - can't find contentId or draftId on page. Please make sure you're on a cms object with ImageAssociations");		
+    		}
+
     		$('#main_title').html(hashtable.title);
 
     		sectionPathArr = hashtable.sectionPath.split("/");
@@ -64,18 +65,31 @@ function populateImageTypes() {
 
   	x.responseType = 'json';
   	x.onload = function() {
-    	// Parse and process the response from contentsadmin
-    	var response = x.response;
 
-	  	response.typecropObjects.forEach(function(entry) {
-	  		createOptionForImageType(entry.userImageTypeName, entry.imageTypeName);
-  		});
+  		try {
+	    	// Parse and process the response from contentsadmin
+	    	var response = x.response;
 
-		$("#image_types_empty_message").hide();
-	  	$("#loading").hide();
+	    	if (response.errors) {
+		    	throw "<br>" +response.errors[0].typeId + " - " + response.errors[0].message;
+		    }
+		    else {
+			  	response.typecropObjects.forEach(function(entry) {
+			  		createOptionForImageType(entry.userImageTypeName, entry.imageTypeName);
+		  		});
+
+				$("#image_types_empty_message").hide();
+			  	$("#loading").hide();
+		  	}
+		}
+		catch (err) {
+			$("#error_note").append(err);
+		  	$("#loading").hide();
+		}
   };
   x.onerror = function() {
-    alert("ERROR");
+  		$("#error_note").append("Error making an api call to " + imageTypesApi);
+    	$("#loading").hide();
   };
   x.send();
 }
@@ -90,83 +104,120 @@ function uploadImage() {
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandName}", getBrandName());
 
 	var apiUrlWithImageName = apiUrlWithBrand.replace("{imageName}", $("#image_name").val());
+	
+	var x;
+	try {
+		var apiUrlWithFileExtension = apiUrlWithImageName.replace("{fileExtension}", getFileExtension());
 
-	var apiUrlWithFileExtension = apiUrlWithImageName.replace("{fileExtension}", getFileExtension());
+		//TODO get showname from the page
+		var imageUploadApi = apiUrlWithFileExtension.replace("&show-name={showName}", "");
 
-	//TODO get showname from the page
-	var imageUploadApi = apiUrlWithFileExtension.replace("&show-name={showName}", "");
+		x = new XMLHttpRequest();
+	  	x.open('POST', imageUploadApi);
 
-	var x = new XMLHttpRequest();
-  	x.open('POST', imageUploadApi);
+	  	x.setRequestHeader("Content-type", "application/octet-stream");
 
-  	x.setRequestHeader("Content-type", "application/octet-stream");
+	  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
 
-  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
+	  	x.responseType = 'json';
+	  	x.onload = function() {
 
-  	x.responseType = 'json';
-  	x.onload = function() {
-    	// Parse and process the response from contentsadmin
-    	var response = x.response;
+	  		try {
+		    	// Parse and process the response from contentsadmin
+		    	var response = x.response;
 
-    	$("#imagesource_id").html(response.damImageContentId);
+		    	if (response.errors) {
+		    		throw "<br>" +response.errors[0].typeId + " - " + response.errors[0].message;
+		    	}
+		    	else {
+		    		$("#error_note").html("");
+		    		$("#imagesource_id").html(response.damImageContentId);
 
-    	$("#image_upload_success").fadeIn("slow");
+		    		$("#image_upload_success").fadeIn("slow");
 
-    	previewImage(response.thumbnailUrl);
-	  	
-	  	$("#loading").hide();
-  };
-  x.onerror = function() {
-    alert("ERROR");
-  };
-  x.send(getFile());
+		    		previewImage(response.thumbnailUrl);
+		    		$("#loading").hide();
+			  	}
+		  	}
+		  	catch (err) {
+		  		$("#error_note").append(err);
+		  		$("#loading").hide();
+		  	}
+	  	};
+
+	  	x.onerror = function() {
+    		$("#error_note").append("Error making an api call to " + imageUploadApi);
+    		$("#loading").hide();
+  		};
+  		x.send(getFile());
+	} 
+	catch (err) {
+		$("#error_note").append(err);
+		$("#loading").hide();
+	}
 }
 
 function associateImage() {
 	$("#loading").show();	
 
-	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
+	try {
+		//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
+		var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
 
-	var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
+		var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
 
-	//TODO call assosiate api in parallel
-	var paths = getTypePaths();
+		//TODO call assosiate api in parallel
+		var paths = getTypePaths();
 
-	var associateimageApi = apiWithImageId.replace("{imageTypePath}", paths[0]);
+		var associateimageApi = apiWithImageId.replace("{imageTypePath}", paths[0]);
 
-	var x = new XMLHttpRequest();
-  	x.open('POST', associateimageApi);
+		var x = new XMLHttpRequest();
+	  	x.open('POST', associateimageApi);
 
-  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
+	  	x.setRequestHeader("Authorization", "EIA_TEST_TOKEN");
 
-  	x.responseType = 'json';
-  	x.onload = function() {
-    	// Parse and process the response from contentsadmin
-    	var response = x.response;
-	  	
-    	$("#imageassociation_dam_id").html(response.commonProperties.ID);
+	  	x.responseType = 'json';
+	  	x.onload = function() {
 
-    	$("#imageassociation_pres_id").html(response.customProperties.PresentationReferenceID);
+	  		try {
+		    	// Parse and process the response from contentsadmin
+		    	var response = x.response;
+			  	
+				if (response.errors) {
+			    	throw "<br>" +response.errors[0].typeId + " - " + response.errors[0].message;
+			    }
+			    else {
 
-    	$("#image_associate_success").fadeIn("slow");
+			    	$("#imageassociation_dam_id").html(response.commonProperties.ID);
 
-	  	$("#loading").hide();
+			    	$("#imageassociation_pres_id").html(response.customProperties.PresentationReferenceID);
 
-	  	if (cms == "presentation") {
-	  		addImageToContent(response.customProperties.PresentationReferenceID);	
-	  	}
-	  	else {
-	  		addImageToContent(response.commonProperties.ID);
-	  	}
+			    	$("#image_associate_success").fadeIn("slow");
 
-	  	
-  };
-  x.onerror = function() {
-    alert("ERROR");
-  };
-  x.send();
+				  	if (cms == "presentation") {
+				  		addImageToContent(response.customProperties.PresentationReferenceID);	
+				  	}
+				  	else {
+				  		addImageToContent(response.commonProperties.ID);
+				  	} 	
+				}
+			 }
+			 catch (err) {
+				$("#error_note").append(err);
+				$("#loading").hide();
+			 }
+	  };
+	  x.onerror = function() {
+	    	$("#error_note").append("Error making an api call to " + associateimageApi);
+	    	$("#loading").hide();
+	  };
+	  x.send();
+  	}
+  	catch (err) {
+		$("#error_note").append(err);
+		$("#loading").hide();
+  	}
 }
 
 
@@ -197,6 +248,10 @@ function getFileExtension() {
 function getFile() {
 	var x = document.getElementById("file_uploader");
 
+	if (!x.files[0]) {
+		throw "No file selected";
+	}
+
 	return x.files[0];
 }
 
@@ -206,7 +261,14 @@ function previewImage(imageurl) {
 }
 
 function getImageId() {
-	return $("#imagesource_id").text();
+
+	var imageSourceId = $("#imagesource_id").text();
+
+	if (!imageSourceId) {
+		throw "Can't find imageSource id to associate to content";
+	}
+
+	return imageSourceId;
 }
 
 function getTypePaths() {
@@ -251,18 +313,31 @@ function addImageToContent(imageId) {
 
   	x.responseType = 'json';
   	x.onload = function() {
-    	// Parse and process the response from contentsadmin
-    	var response = x.response;
 
-    	//TODO move this cadd back in the addImageToContent() func
-		var payloadWithImages = addImages(response, imageId);
-		makePutRequest(payloadWithImages);
+  		try {
+	    	// Parse and process the response from contentsadmin
+	    	var response = x.response;
 
-	  	return response;
+			if (response.errors) {
+		    	throw "<br>" +response.errors[0].typeId + " - " + response.errors[0].message;
+		    }
+		    else {
+		    	//TODO move this cadd back in the addImageToContent() func
+				var payloadWithImages = addImages(response, imageId);
+				makePutRequest(payloadWithImages);
+
+			  	return response;
+		  	}
+	  	}
+	  	catch (err) {
+	  		$("#error_note").append(err);
+			$("#loading").hide();
+	  	}
 
   };
   x.onerror = function() {
-    alert("ERROR");
+    $("#error_note").append("Error making an api call to " + contentObjectApi);
+    $("#loading").hide();
   };
   x.send();
 
@@ -303,14 +378,28 @@ function makePutRequest(payloadWithImages) {
 
   	x.responseType = 'json';
   	x.onload = function() {
-    	// Parse and process the response from contentsadmin
-    	var response = x.response;
 
-    	$("#images_added_success").fadeIn("slow");
+  		try {
+	    	// Parse and process the response from contentsadmin
+	    	var response = x.response;
 
+	    	if (response.errors) {
+		    	throw "<br>" +response.errors[0].typeId + " - " + response.errors[0].message;
+		    }
+		    else {
+	    		$("#images_added_success").fadeIn("slow");
+
+	    		$("#loading").hide();
+	    	}
+    	}
+    	catch (err) {
+    		$("#error_note").append(err);
+			$("#loading").hide();
+    	}
   };
   x.onerror = function() {
-    alert("ERROR");
+    $("#error_note").append("Error making an api call to " + putApi);
+    $("#loading").hide();
   };
   x.send(JSON.stringify(payloadWithImages));
 }
