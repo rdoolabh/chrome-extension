@@ -42,52 +42,72 @@
         <br><br>
         <form id="myForm">
 
-          Image Name: <input type="text" name="image_name" id="image_name"><br>
-          <br>
-          <!-- <input id="file_uploader" type="file" name="image" accept="*"> -->
-          <input type="file" id="file_uploader" multiple size="50">
-
-          <button type="button" id="upload_butt">Upload</button>
-
-          <br><br>
-
-          <div id="image_upload_success" style="display: none;">
-            <span style="color: green;">SUCCESSFUL!</span> <br>
-            <span>Here is the DAM ID for the ImageSource:</span>
-            <span id="imagesource_id" style="color: green;"></span>
+          <div>
+            <input type="radio" name="user_select" id="show_upload_panel">Upload ImageSource<br>
+            <input type="radio" name="user_select" id="show_imagesource_id">Enter ImageSource ID 
           </div>
 
           <br><br>
+          <div id="upload_panel" style="display: none;"> 
+            Image Name: <input type="text" name="image_name" id="image_name"><br>
+            <br>
+            <!-- <input id="file_uploader" type="file" name="image" accept="*"> -->
+
           
-          <div id="preview"></div>
+            <input type="file" id="file_uploader" multiple size="50">
+
+            <button type="button" id="upload_butt">Upload</button>
+
+            <br><br>
+
+            <div id="image_upload_success" style="display: none;">
+              <span style="color: green;">SUCCESSFUL!</span> <br>
+              <span>Here is the DAM ID for the ImageSource:</span>
+              <span id="imagesource_id" style="color: green;"></span>
+            </div>
+
+            <br><br>
+            
+            <div id="preview"></div>
+          </div>
+
+          <div id="source_panel" style="display: none;">
+            Image Source ID: <input type="text" name="entered_imagesource_id" id="entered_imagesource_id"><br>
+          </div>
 
           <br><br>  
 
-          <button type="button" id="image_types_butt">Get Image Types</button>        
+          <div id="image_types_panel" style="display: none;">
+            <button type="button" id="image_types_butt">Get Image Types</button>        
 
-          <fieldset id="image_types_container">
-            <legend>Image Types:</legend>
-            <span id="image_types_empty_message">No image types available</span>
-            <!--<input type="checkbox" name="fake_value" value="fake_value" />trendingposter <br />
-            <input type="checkbox" name="image_types" value="postershowPath" />postershow<br />
-            <input type="checkbox" name="image_types" value="web16x9Path" />web16x9<br />-->
-          </fieldset>
+            <fieldset id="image_types_container">
+              <legend>Image Types:</legend>
+              <span id="image_types_empty_message">No image types available</span>
+              <!--<input type="checkbox" name="fake_value" value="fake_value" />trendingposter <br />
+              <input type="checkbox" name="image_types" value="postershowPath" />postershow<br />
+              <input type="checkbox" name="image_types" value="web16x9Path" />web16x9<br />-->
+            </fieldset>
+
+          </div>
 
           <br><br>
-          <button type="button" id="associate_image_butt">Associate Image</button>  
 
-          <div id="image_associate_success" style="display: none;">
-            <span style="color: green;">SUCCESSFUL!</span> <br>
-            <span>Here is the DAM ID for the ImageAssociation:</span>
-            <span id="imageassociation_dam_id" style="color: green;"></span> <br>
-            <span>Here is the Presentation ID for the ImageAssociation:</span>
-            <span id="imageassociation_pres_id" style="color: green;"></span>
+          <div id="image_associate_panel" style="display: none;">
+            <button type="button" id="associate_image_butt">Associate Image</button>  
+
+            <div id="image_associate_success" style="display: none;">
+              <span style="color: green;">SUCCESSFUL!</span> <br>
+              <span>Here is the DAM ID for the ImageAssociation:</span>
+              <span id="imageassociation_dam_id" style="color: green;"></span> <br>
+              <span>Here is the Presentation ID for the ImageAssociation:</span>
+              <span id="imageassociation_pres_id" style="color: green;"></span>
+            </div>
+            
+            <div id="images_added_success" style="display: none;">
+              <span style="color: green;">Images successfully added to content</span> <br>
+            </div>
           </div>
           
-          <div id="images_added_success" style="display: none;">
-            <span style="color: green;">Images successfully added to content</span> <br>
-          </div>
-
 
         </form>
       </div>

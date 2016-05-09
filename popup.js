@@ -133,7 +133,10 @@ function uploadImage() {
 		    		$("#error_note").html("");
 		    		$("#imagesource_id").html(response.damImageContentId);
 
-		    		$("#image_upload_success").fadeIn("slow");
+
+		    		$("#image_types_panel").slideDown("slow");
+		    		$("#image_associate_panel").slideDown("slow");
+		    		$("#image_upload_success").slideDown("slow");
 
 		    		previewImage(response.thumbnailUrl);
 		    		$("#loading").hide();
@@ -262,7 +265,17 @@ function previewImage(imageurl) {
 
 function getImageId() {
 
-	var imageSourceId = $("#imagesource_id").text();
+	var imageSourceId;
+
+	var imageSourceFromUpload = $("#imagesource_id").text();
+	var imageSourceFromUserInput = $("#entered_imagesource_id").val();
+
+	if (imageSourceFromUpload) {
+		imageSourceId = imageSourceFromUpload;
+	}
+	else {
+		imageSourceId = imageSourceFromUserInput;
+	}
 
 	if (!imageSourceId) {
 		throw "Can't find imageSource id to associate to content";
@@ -416,7 +429,26 @@ function getCMS() {
 	}
 }
 
+function showUploadPanel() {
+	$("#source_panel").hide();
+	$("#image_types_panel").hide();
+	$("#image_associate_panel").hide();
+	$("#upload_panel").slideDown("slow");
+}
+
+function showImageSourceIdPanel() {
+	$("#upload_panel").hide();
+	$("#source_panel").slideDown("slow");
+	$("#image_types_panel").slideDown("slow");
+	$("#image_associate_panel").slideDown("slow");
+}
+
 //javascript that interacts with the popup
+
+document.getElementById('show_upload_panel').addEventListener('click', showUploadPanel);
+
+document.getElementById('show_imagesource_id').addEventListener('click', showImageSourceIdPanel);
+
 document.getElementById('image_types_butt').addEventListener('click', populateImageTypes);
 
 document.getElementById('upload_butt').addEventListener('click', uploadImage);
