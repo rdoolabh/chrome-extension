@@ -51,8 +51,8 @@ function populateImageTypes() {
 
 	$("#loading").show();	
 
-	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/imagetypes?brand={brandId}&type={contentType}';
 
 
 	//TODO get brand id and make a call for alias
@@ -97,9 +97,9 @@ function populateImageTypes() {
 function uploadImage() {
 	$("#loading").show();	
 
-	//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images?brand-name={brandName}&image-name={imageName}&file-extension={fileExtension}&show-name={showName}';
 
 	var apiUrlWithBrand = apiUrlWithPlaceholders.replace("{brandName}", getBrandName());
 
@@ -164,9 +164,9 @@ function associateImage() {
 	$("#loading").show();	
 
 	try {
-		//var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
+		var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}'
 
-		var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
+		//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/images/associateimage?imageid={imageId}&imagetype={imageTypePath}';
 
 		var apiWithImageId = apiUrlWithPlaceholders.replace("{imageId}", getImageId());
 
@@ -314,7 +314,9 @@ function getContentId(contentIdAndDraft) {
 
 function addImageToContent(imageId) {
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/content-objects?id={id}&cms={cms}';
 
 	//TODO get brand id and make a call for alias
 	var apiUrlWithId = apiUrlWithPlaceholders.replace("{id}", contentId);
@@ -378,7 +380,9 @@ function addImages(payload, imagePresId) {
 
 function makePutRequest(payloadWithImages) {	
 
-	var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+	//var apiUrlWithPlaceholders = 'http://localhost:8080/contentsadmin/v2/content-objects?id={id}&cms={cms}';
+
+	var apiUrlWithPlaceholders = 'http://staging.api.n7.contentadmin.abc.go.com/api/ws/contentsadmin/v2/content-objects?id={id}&cms={cms}';
 
 	var apiWithContentId = apiUrlWithPlaceholders.replace("{id}", contentId);
 
